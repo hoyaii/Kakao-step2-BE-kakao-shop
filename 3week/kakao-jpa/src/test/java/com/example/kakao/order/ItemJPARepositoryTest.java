@@ -13,6 +13,7 @@ import com.example.kakao.order.Order;
 import com.example.kakao.order.OrderJPARepository;
 import com.example.kakao.order.item.Item;
 import com.example.kakao.order.item.ItemJPARepository;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.api.Assertions;
@@ -34,20 +35,41 @@ import java.util.Optional;
 
 
 @DataJpaTest
-public class OrderJPARepositoryTest extends DummyEntity {
+public class ItemJPARepositoryTest extends DummyEntity {
     @Autowired
     private UserJPARepository userJPARepository;
     @Autowired
     private OrderJPARepository orderJPARepository;
     @Autowired
+    private  ProductJPARepository productJPARepository;
+    @Autowired
+    private  ItemJPARepository itemJPARepository;
+    @Autowired
+    private  OptionJPARepository optionJPARepository;
+    @Autowired
+    private  CartJPARepository cartJPARepository;
+    @Autowired
     private EntityManager em;
 
     @BeforeEach
     public void setUp(){
-        User user = userJPARepository.save(newUser("ssar"));
+        User user = newUser("ssar");
+        userJPARepository.save(user);
+
+        Product product = newProduct("기본에 슬라이딩 지퍼백 크리스마스/플라워에디션 에디션 외 주방용품 특가전", 1, 1000);
+        productJPARepository.save(product);
+
+        Option option = newOption(product,"01. 슬라이딩 지퍼백 크리스마스에디션 4종", 10000);
+        optionJPARepository.save(option);
+
+        Cart cart = newCart(user, option, 5);
+        cartJPARepository.save(cart);
 
         Order order = newOrder(user);
         orderJPARepository.save(order);
+
+        Item item = newItem(cart, order);
+        itemJPARepository.save(item);
 
         em.clear();
     }
@@ -58,10 +80,15 @@ public class OrderJPARepositoryTest extends DummyEntity {
         int orderId = 1;
 
         //when
-        Order order = orderJPARepository.findById(orderId).get();
+        List<Item> itemList = itemJPARepository.findItemByOrderId(orderId);
+        Item item = itemList.get(0);
 
         //then
-        Assertions.assertThat(order.getId()).isEqualTo(orderId);
-        Assertions.assertThat(order.getUser().getUsername()).isEqualTo("ssar");
+        Assertions.assertThat(item.getOrder().getId()).isEqualTo(orderId);
+        Assertions.assertThat(item.getOrder().getUser().getUsername()).isEqualTo("ssar");
+        Assertions.assertThat(item.getPrice()).isEqualTo(50000);
+        Assertions.assertThat(item.getQuantity()).isEqualTo(5);
+        Assertions.assertThat(item.getOption().getOptionName()).isEqualTo("01. 슬라이딩 지퍼백 크리스마스에디션 4종");
+        Assertions.assertThat(item.getOption().getProduct().getProductName()).isEqualTo("기본에 슬라이딩 지퍼백 크리스마스/플라워에디션 에디션 외 주방용품 특가전");
     }
 }

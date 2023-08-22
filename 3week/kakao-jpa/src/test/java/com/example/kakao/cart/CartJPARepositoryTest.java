@@ -53,13 +53,13 @@ class CartJPARepositoryTest extends DummyEntity {
         List<Product> productListPS = productJPARepository.saveAll(productDummyList());
         List<Option> optionList = optionJPARepository.saveAll(optionDummyList(productListPS));
 
-        Cart cart = cartJPARepository.save(newCart(user,optionList.get(4),10));
+        cartJPARepository.save(newCart(user,optionList.get(4),10));
 
         em.clear();
     }
 
     @Test
-    public void addCart_test() { // 6. 장바구니 담기 기능 테스트
+    public void cart_save_test() { // 6. 장바구니 담기 기능 테스트
         //given
         int optionId = 4;
 
@@ -68,13 +68,12 @@ class CartJPARepositoryTest extends DummyEntity {
 
         Optional<Option> option = optionJPARepository.findById(optionId);
         Cart cart = cartJPARepository.save(newCart(user, option.get(), 10));
-        Optional<Cart> findCart = cartJPARepository.findById(2);
 
         //then
-        Assertions.assertThat(findCart.get().getId()).isEqualTo(cart.getId());
-        Assertions.assertThat(findCart.get().getUser().getUsername()).isEqualTo(cart.getUser().getUsername());
-        Assertions.assertThat(findCart.get().getOption().getId()).isEqualTo(optionId);
-        Assertions.assertThat(findCart.get().getQuantity()).isEqualTo(cart.getQuantity());
+        Assertions.assertThat(cart.getId()).isEqualTo(2);
+        Assertions.assertThat(cart.getUser().getUsername()).isEqualTo("ssar2");
+        Assertions.assertThat(cart.getOption().getId()).isEqualTo(4);
+        Assertions.assertThat(cart.getQuantity()).isEqualTo(10);
     }
 
     @Test
@@ -84,38 +83,41 @@ class CartJPARepositoryTest extends DummyEntity {
 
         //when
         List<Cart> cartPSList = cartJPARepository.findCartByUserId(userId);
+        Cart cart = cartPSList.get(0);
 
         //then
-        Assertions.assertThat(cartPSList.get(0).getId()).isEqualTo(1);
-        Assertions.assertThat(cartPSList.get(0).getUser().getId()).isEqualTo(userId);
+        Assertions.assertThat(cart.getId()).isEqualTo(1);
+        Assertions.assertThat(cart.getUser().getId()).isEqualTo(userId);
     }
 
     @Test
-    public void cart_findByCartId_test() throws JsonProcessingException{ // by cartID
-        //given
-        int cartId = 1;
-
-        //when
-        Cart cart = cartJPARepository.findById(cartId).get();
-
-        //then
-        Assertions.assertThat(cart.getId()).isEqualTo(cartId);
-    }
-
-    @Test
-    public void updateCart_test() throws JsonProcessingException { // 8. 장바구니 수정 기능 테스트
+    public void cart_update_test() throws JsonProcessingException { // 8. 장바구니 수정 기능 테스트
         //given
         int cartId = 1;
 
         //when
         Optional<Cart> cart = cartJPARepository.findById(cartId);
         cart.get().update(100, 100);
-        em.flush();
+
+        em.flush(); // 영속성 컨텍스트에 있는 변경 내용을 데이터베이스에 동기화
 
         Optional<Cart> newCart = cartJPARepository.findById(cartId);
 
         //then
         Assertions.assertThat(newCart.get().getPrice()).isEqualTo(100);
         Assertions.assertThat(newCart.get().getQuantity()).isEqualTo(100);
+    }
+
+    @Test
+    public void cart_delete_test() {
+        // Given
+        int userId = 1;
+
+        // When
+        cartJPARepository.deleteByUserId(userId);
+        List<Cart> carts = cartJPARepository.findCartByUserId(1); // 빈 리스트 반환
+
+        // Then
+        Assertions.assertThat(carts).isEmpty();
     }
 }
