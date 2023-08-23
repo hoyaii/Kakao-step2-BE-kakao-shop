@@ -41,17 +41,20 @@ public class CartRestControllerTest extends DummyEntity {
 
     @WithMockUser(username = "ssar@nate.com", roles = "USER")
     @Test
-    public void addCart_test() throws Exception{
+    public void cart_save_test() throws Exception{
         //given
         List<CartRequest.SaveDTO> requestDTOs = new ArrayList<>();
+
         CartRequest.SaveDTO d1 = new CartRequest.SaveDTO();
         d1.setQuantity(1);
         d1.setOptionId(5);
+        requestDTOs.add(d1);
+
         CartRequest.SaveDTO d2 = new CartRequest.SaveDTO();
         d2.setQuantity(2);
         d2.setOptionId(5);
-        requestDTOs.add(d1);
         requestDTOs.add(d2);
+
         String requestBody = om.writeValueAsString(requestDTOs);
         System.out.println("테스트 : "+requestBody);
 
@@ -71,19 +74,21 @@ public class CartRestControllerTest extends DummyEntity {
 
     @WithMockUser(username = "ssar@nate.com", roles = "USER")
     @Test
-    public void addCart_test_failure() throws Exception{
+    public void cart_save_test_failure() throws Exception{
         //given
         List<CartRequest.SaveDTO> requestDTOs = new ArrayList<>();
         CartRequest.SaveDTO d1 = new CartRequest.SaveDTO();
         d1.setQuantity(-1); // 유효하지 않은 수량으로 설정
         d1.setOptionId(5);
+        requestDTOs.add(d1);
+
         CartRequest.SaveDTO d2 = new CartRequest.SaveDTO();
         d2.setQuantity(2);
         d2.setOptionId(-1); // 유효하지 않은 옵션 ID로 설정
-        requestDTOs.add(d1);
         requestDTOs.add(d2);
+
         String requestBody = om.writeValueAsString(requestDTOs);
-        System.out.println("테스트 : "+requestBody);
+        System.out.println("테스트 : " + requestBody);
 
         // when
         ResultActions result = mvc.perform(
@@ -96,12 +101,12 @@ public class CartRestControllerTest extends DummyEntity {
         System.out.println("테스트 : "+responseBody);
 
         // then
-        //result.andExpect(MockMvcResultMatchers.jsonPath("$.success").value("false"));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.success").value("false"));
     }
 
     @WithMockUser(username = "ssar@nate.com", roles = "USER")
     @Test
-    public void findCart_test() throws Exception{
+    public void cart_find_test() throws Exception{
         // given
 
         // when

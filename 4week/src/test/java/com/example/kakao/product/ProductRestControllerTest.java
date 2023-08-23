@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/*
+
 // ver 1
 @Import({
         SecurityConfig.class,  //  실수 1 - 포스트맨에선 로그인 안해도 반응이 오길래 필요없는 줄 알았는데, 얘 import 안하면 반응이 없음
@@ -44,7 +44,6 @@ public class ProductRestControllerTest extends DummyEntity{
 
     @Autowired
     private MockMvc mvc;
-
 
     @Test
     void findAllProducts_test() throws Exception {
@@ -63,6 +62,8 @@ public class ProductRestControllerTest extends DummyEntity{
 
         // then
         result.andExpect(MockMvcResultMatchers.jsonPath("$.success").value("true"));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.response[0].productName").value("통영 홍 가리비 2kg, 2세트 구매시 1kg 추가증정"));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.response[0].price").value(8900));
     }
 
     @Test
@@ -82,6 +83,10 @@ public class ProductRestControllerTest extends DummyEntity{
 
         // then
         result.andExpect(MockMvcResultMatchers.jsonPath("$.success").value("true"));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.response.productName").value("기본에 슬라이딩 지퍼백 크리스마스/플라워에디션 에디션 외 주방용품 특가전"));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.response.price").value(1000));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.response.options[0].optionName").value("01. 슬라이딩 지퍼백 크리스마스에디션 4종"));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.response.options[0].price").value(10000));
     }
 
     @Test
@@ -102,9 +107,10 @@ public class ProductRestControllerTest extends DummyEntity{
         // then
         result.andExpect(MockMvcResultMatchers.status().isNotFound());
     }
-}*/
+}
 
 
+/*
 // ver 2 - FakeStore를 MockBean으로 해서 stub으로 Mockito를 사용하면, findAllProducts_test()는 작동하는데 findProductById_test()는
 //         작동하지 않음
 @Import({
@@ -122,7 +128,6 @@ public class ProductRestControllerTest extends DummyEntity{
 
     @Autowired
     private MockMvc mvc;
-
 
     @Test
     void findAllProducts_test() throws Exception {
@@ -174,5 +179,4 @@ public class ProductRestControllerTest extends DummyEntity{
         result.andExpect(MockMvcResultMatchers.jsonPath("$.success").value("true"));
         // 작동 하지 않음
     }
-}
- //*/
+}*/

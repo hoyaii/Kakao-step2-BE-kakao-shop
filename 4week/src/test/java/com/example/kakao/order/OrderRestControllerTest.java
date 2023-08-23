@@ -44,7 +44,6 @@ public class OrderRestControllerTest extends DummyEntity {
     @Autowired
     private ObjectMapper om;
 
-
     @WithMockUser(username = "ssar@nate.com", roles = "USER")
     @Test
     public void saveOrder_test() throws Exception{
@@ -104,7 +103,7 @@ public class OrderRestControllerTest extends DummyEntity {
     @Test
     public void findOrderById_test_failure_notFound() throws Exception {
         // given
-        int id = 5; // 존재하지 않는 주문 ID
+        int id = 4; // 존재하지 않는 주문 ID
 
         // when
         ResultActions result = mvc.perform(

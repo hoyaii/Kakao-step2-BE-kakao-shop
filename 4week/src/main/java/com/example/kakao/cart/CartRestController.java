@@ -37,11 +37,15 @@ public class CartRestController {
     public ResponseEntity<?> addCartList(@RequestBody List<CartRequest.SaveDTO> requestDTOs, @AuthenticationPrincipal CustomUserDetails userDetails) {
         for(CartRequest.SaveDTO dto : requestDTOs){
             if (dto.getQuantity() <= 0) {
-                throw new Exception404("잘못된 quantity 값 요청");
+                Exception404 ex = new Exception404("잘못된 quantity 값 요청");
             }
 
             if (dto.getOptionId() <= 0) {
-                throw new Exception404("잘못된 optionId 값 요청");
+                Exception404 ex = new Exception404("잘못된 optionId 값 요청");
+                return new ResponseEntity<>(
+                        ex.body(),
+                        ex.status()
+                );
             }
         }
 
@@ -59,17 +63,6 @@ public class CartRestController {
         return ResponseEntity.ok(ApiUtils.success(responseDTO));
     }
 
-
-// [
-//     {
-//         "cartId":1,
-//         "quantity":10
-//     },
-//     {
-//         "cartId":2,
-//         "quantity":10
-//     }
-// ]
     // (기능11) 주문하기 - (장바구니 업데이트)
     @PostMapping("/carts/update")
     public ResponseEntity<?> update(@RequestBody @Valid List<CartRequest.UpdateDTO> requestDTOs, @AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -79,11 +72,19 @@ public class CartRestController {
 
         for (CartRequest.UpdateDTO dto : requestDTOs){
             if (dto.getQuantity() <= 0) {
-                throw new Exception404("잘못된 quantity 값 요청");
+                Exception404 ex = new Exception404("잘못된 quantity 값 요청");
+                return new ResponseEntity<>(
+                        ex.body(),
+                        ex.status()
+                );
             }
 
-            if (dto.getCartId()<= 0) {
-                throw new Exception404("잘못된 cartId 값 요청");
+            if (dto.getCartId() <= 0) {
+                Exception404 ex = new Exception404("잘못된 cartId 값 요청");
+                return new ResponseEntity<>(
+                        ex.body(),
+                        ex.status()
+                );
             }
         }
 

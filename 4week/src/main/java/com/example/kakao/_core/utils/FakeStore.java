@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
  */
 @Getter
 @Component
+// @Component 어노테이션은 스프링 프레임워크에서 주로 사용되며, 해당 클래스를 스프링 IoC 컨테이너의 빈으로 자동으로 등록하도록 지시하는 역할을 한다
 public class FakeStore {
 
     private List<Product> productList = productDummyList();
